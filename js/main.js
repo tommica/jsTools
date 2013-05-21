@@ -1,8 +1,6 @@
 $(function () {
   // Some basic stuff, clicking and toggling tabs
 
-  Deferred.define();
-
   // Handle displaying the content
   var toggleTab = function(e) {
     if(e) {
@@ -11,7 +9,7 @@ $(function () {
     var target = window.location.hash;
 
     // Set active tabs (a horrible hack)
-    $('.nav a').forEach(function(elem, i) {
+    $('.nav a').each(function(i, elem) {
       elem.parentNode.className = '';
 
       if(window.location.hash === '#generator') {
@@ -19,7 +17,7 @@ $(function () {
           elem.parentNode.className = 'active';
         }
       } else {
-        if(elem.hash.indexOf('#generator') === -1 && elem.hash != '' ) {
+        if(elem.hash.indexOf('#generator') === -1 && elem.hash !== '' ) {
           elem.parentNode.className = 'active';
         }
       }
@@ -65,28 +63,41 @@ $(function () {
 
 
   // Generator
-  $('button').on('click', function(e) {
-    var elements = $('input[type="checkbox"]');
-    var output = '';
+  $('button').bind('click', function(e) {
+    // Get all checked elements
+    var $elements = $('input:checked');
 
-    // First loop thru all the files and do some ajax calls
-    loop(elements.length, function(i) {
-      var elem = elements[i];
-      var tool = elem.value+'.js';
+    // Add requests to array (jquery deferred wants this)
+    var ajaxReqs = [];
+    $elements.each( function(i, elem) {
+      ajaxReqs.push(
+        $.get('js/tools/'+(elem.value+'.js'))
+      );
+    });
 
-      if(elem.checked) {
-        return $.get("js/tools/"+tool, function(res) {
-          res = res.replace('"use strict";', '');
-          res = res.replace("'use strict';", '');
+    // Not sure what this does - MAGIC
+    $.when.apply( $, ajaxReqs ).then(function(){
+      var output = '';
 
-          output = output + res;
+
+      // If there was more that ONE item selected, the result will be array with objects inside
+      if(typeof(arguments[0]) === "object") {
+        $(arguments).each(function(key, value) {
+          output = output + value[0].toString();
         });
+      } else {
+        // Otherwise the result will be an object
+        output = output + arguments[0].toString();
       }
-    // After that, minify the JS
-    }).next(function() {
+
+      // Remove any use strict lines
+      output = output.replace('"use strict";', '');
+      output = output.replace("'use strict';", '');
+
+      // Minify the code
       output = jsmin('', output, 2);
-    // And display it
-    }).next(function() {
+
+      // Set the textarea and download link correctly
       $('textarea')[0].value = output;
       $('.download')[0].style.display = 'block';
       $('.download')[0].href = 'data:application/csv;charset=utf-8,'+output;
