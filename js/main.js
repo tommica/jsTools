@@ -1,7 +1,6 @@
 $(function () {
   // Some basic stuff, clicking and toggling tabs
 
-  // Set up deffer
   Deferred.define();
 
   // Handle displaying the content
@@ -12,7 +11,7 @@ $(function () {
     var target = window.location.hash;
 
     // Set active tabs (a horrible hack)
-    $('.nav a').each(function(elem, i) {
+    $('.nav a').forEach(function(elem, i) {
       elem.parentNode.className = '';
 
       if(window.location.hash === '#generator') {
@@ -76,7 +75,7 @@ $(function () {
       var tool = elem.value+'.js';
 
       if(elem.checked) {
-        return microAjax("js/tools/"+tool, function(res) {
+        return $.get("js/tools/"+tool, function(res) {
           res = res.replace('"use strict";', '');
           res = res.replace("'use strict';", '');
 
@@ -89,6 +88,8 @@ $(function () {
     // And display it
     }).next(function() {
       $('textarea')[0].value = output;
+      $('.download')[0].style.display = 'block';
+      $('.download')[0].href = 'data:application/csv;charset=utf-8,'+output;
     });
 
     e.preventDefault();
