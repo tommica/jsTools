@@ -95,12 +95,12 @@ $(function () {
       output = output.replace("'use strict';", '');
 
       // Minify the code
-      output = jsmin('', output, 2);
+      output = uglify(output);
 
       // Set the textarea and download link correctly
       $('textarea')[0].value = output;
       $('.download')[0].style.display = 'block';
-      $('.download')[0].href = 'data:application/csv;charset=utf-8,'+output;
+      $('.download')[0].href = 'data:application/javascript;charset=utf-8,'+output;
     });
 
     e.preventDefault();
