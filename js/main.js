@@ -83,16 +83,12 @@ $(function () {
       // If there was more that ONE item selected, the result will be array with objects inside
       if(typeof(arguments[0]) === "object") {
         $(arguments).each(function(key, value) {
-          output = output + value[0].toString();
+          output = output + (value[0].toString().replace('"use strict";', '').replace("'use strict';", ''));
         });
       } else {
         // Otherwise the result will be an object
-        output = output + arguments[0].toString();
+        output = output + (arguments[0].toString().replace('"use strict";', '').replace("'use strict';", ''));
       }
-
-      // Remove any use strict lines
-      output = output.replace('"use strict";', '');
-      output = output.replace("'use strict';", '');
 
       // Minify the code
       output = uglify(output);
