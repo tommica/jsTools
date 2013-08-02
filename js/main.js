@@ -1,4 +1,6 @@
+/* global $, uglify */
 $(function () {
+  'use strict';
   // Some basic stuff, clicking and toggling tabs
 
   // Handle displaying the content
@@ -83,14 +85,15 @@ $(function () {
       // If there was more that ONE item selected, the result will be array with objects inside
       if(typeof(arguments[0]) === "object") {
         $(arguments).each(function(key, value) {
-          output = output + (value[0].toString().replace('"use strict";', '').replace("'use strict';", ''));
+          output = output + (value[0].toString());
         });
       } else {
         // Otherwise the result will be an object
-        output = output + (arguments[0].toString().replace('"use strict";', '').replace("'use strict';", ''));
+        output = output + (arguments[0].toString());
       }
 
-      // Minify the code
+      // Minify the code, and remove the use stricts
+      output = output.replace(/\"use strict\"\;/gi, '').replace(/\'use strict\'\;/gi, '');
       output = uglify(output);
 
       // Set the textarea and download link correctly

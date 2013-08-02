@@ -1,6 +1,8 @@
 "use strict";
 /* jshint globalstrict: true */
-/* global window, navigator */
+/* global window */
 
 // Creates a dummy console(.log) if it does not exist
-window.console||(console={log:function(){}});
+if( !("console" in window) ) {
+  window.console = { "log": function(){} };
+}
